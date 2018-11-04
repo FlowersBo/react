@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
-import {Route,Switch} from 'react-router-dom';
+import {Route,Switch,Redirect} from 'react-router-dom';
+import Cookies  from 'js-cookie';
 import {NavBar} from 'antd-mobile';
+import PropTypes from 'prop-types';
+import {getRedirectPath} from '../../utils';
 
 import DashenInfo from '../../containers/dashen-info';
 import LaobanInfo from '../../containers/laoban-info';
@@ -10,6 +13,10 @@ import Message from '../../containers/message';
 import Personal from '../../containers/personal';
 import NavFooter from  '../nav-footer';
 class Main extends Component {
+  static propTypes={
+    user:PropTypes.object.isRequired,
+    getUserInfo:PropTypes.func.isRequired
+  }
   navList = [
     {
       path: '/laoban', // 路由路径
@@ -17,7 +24,6 @@ class Main extends Component {
       title: '大神列表',
       icon: 'dashen',
       text: '大神',
-      hide:true
     },
     {
       path: '/dashen', // 路由路径
@@ -43,9 +49,33 @@ class Main extends Component {
   ]
   
   render () {
-    const {navList}=this;
+    //获取Cookies
+    const userid=Cookies.get('userid');
+    //本地没有Cookies
+    if(!userid){
+      return <Redirect to='/login'/>
+    }
+    //本地有Cookies
+    const {user}=this.props;
+    if(!user._id){
+      this.props.getUserInfo();
+      return <div>loading...</div>
+    }
+    //本地有Cookies,并且redux有数据，直接使用
     //获取当前路由路径
     const {pathname}=this.props.location;
+    if(pathname==='/'){
+      return <Redirect to={getRedirectPath(user.type,user.header)}/>
+    }
+    
+    //如果当前页面为老板就显示是大神图标
+    const {navList}=this;
+    if(user.type==='laoban'){
+      navList[1].hide=true;
+    }else{
+      navList[0].hide=true;
+    }
+   
     //当前路径对应显示的的nav对象
     const currentNav=navList.find(nav=>pathname===nav.path);
     return (
@@ -59,7 +89,7 @@ class Main extends Component {
           <Route path='/message' component={Message}/>
           <Route path='/personal' component={Personal}/>
         </Switch>
-        <NavFooter navList={navList}/>
+        {currentNav?<NavFooter navList={navList}/>:''}
       </div>
       
     )

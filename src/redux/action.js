@@ -7,7 +7,7 @@
  异步返回一个函数
 */
 
-import {reqLogin,reqRegister,reqUpdateUserInfo} from '../api';
+import {reqLogin,reqRegister,reqUpdateUserInfo,reqGetUserInfo} from '../api';
 import {ERR_MSG,AUTH_SUCCESS,UPDATE_USER,RESET_USER} from './action-types';
 //同步action   注册成功   action-types有几个值，actions中就有几个同步action
 export const authSuccess = user => ({type: AUTH_SUCCESS, data: user});
@@ -130,6 +130,25 @@ export const updateUserInfo = data => {
         })
     }
   }
+  
+//获取用户信息
+export const getUserInfo=()=>{
+  return dispatch=>{
+    //发送ajax 请求
+    reqGetUserInfo()
+      .then(res=>{
+        const result=res.data;
+        if(result.code===0){//请求成功
+        dispatch(updateUser(result.data))
+        }else{//请求失败
+         dispatch(resetUser({msg:result.msg}))
+        }
+      })
+      .catch(err=>{
+        dispatch(resetUser({msg:'网络不稳定，请重新试试~'}))
+      })
+  }
+}
 
 
 /*
