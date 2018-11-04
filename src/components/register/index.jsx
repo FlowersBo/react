@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import Logo from '../logo';
 import PropTypes from 'prop-types';
-import {Redirect} from 'react-router-dom'
+import {Redirect} from 'react-router-dom';
 import {NavBar,List,InputItem,WingBlank,WhiteSpace,Radio,Button} from 'antd-mobile';
 // import {reqRegister} from '../../api';
 const Item = List.Item;
@@ -24,7 +24,6 @@ class Register extends Component {
   register=async()=>{
     //获取数据
     const {username,password,rePassword,type}=this.state
-    console.log(username,password,rePassword,type);
     //发送ajax请求
     this.props.register({username,password,rePassword,type})
   }

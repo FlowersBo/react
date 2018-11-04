@@ -20,7 +20,7 @@ class LaobanInfo extends Component {
       })
   }
   handleClick=()=>{
-  this.props.updateUserInfo(this.state)
+  this.props.updateUserInfo({...this.state,type:'laoban'})
   }
   setHeader=header=>{
     this.setState({
