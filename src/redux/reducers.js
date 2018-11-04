@@ -5,7 +5,7 @@
  reducers函数： 根据之前的状态和action来产生新的状态
  */
 import {combineReducers} from 'redux';
-import {AUTH_SUCCESS,ERR_MSG,UPDATE_USER,RESET_USER} from './action-types';
+import {AUTH_SUCCESS,ERR_MSG,UPDATE_USER,RESET_USER, UPDATE_USER_LIST, RESET_USER_LIST} from './action-types';
 import {getRedirectPath} from '../utils';
 const initUserState={
   username:'',
@@ -28,6 +28,18 @@ function user(preState=initUserState,action) {
     }
 }
 
+const initUserList=[];
+function userList(preState=initUserList,action) {
+  switch (action.type){
+    case UPDATE_USER_LIST:
+      return action.data;
+    case RESET_USER_LIST:
+      return action.data;
+    default:
+      return preState;
+  }
+}
 export default combineReducers({
-  user
+  user,
+  userList
 })

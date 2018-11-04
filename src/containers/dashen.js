@@ -3,7 +3,8 @@
  */
 import {connect} from 'react-redux';
 import Dashen from '../components/dashen';
+import {getUserList} from '../redux/action';
 export default connect(
-  state=>({state}),
-  {}
+  state=>({userList:state.userList}),
+  {getUserList}
 )(Dashen)

@@ -4,18 +4,17 @@ import PropTypes from 'prop-types';
 import Cookie from 'js-cookie';
 const Item = List.Item
 const Brief = Item.Brief
-const alert = Modal.alert;
 export default class Personal extends React.Component {
   static propTypes={
     user:PropTypes.object.isRequired
   }
   logout=()=>{
-    alert('退出登录', '你确定退出登录吗?', [
-      { text: '取消'},
+    Modal.alert('退出登录', '你确定退出登录吗?', [
+      { text: '取消',onPress: ()=>{}},
       { text: '确认', onPress: () => {
         //清除Cookie
         Cookie.remove('userid');
-        //跳转到登录页面
+        //路由跳转到登录页面  推出页面出现了bug
         this.props.history.replace('/login');
       } },
     ])

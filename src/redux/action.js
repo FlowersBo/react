@@ -7,8 +7,8 @@
  异步返回一个函数
 */
 
-import {reqLogin,reqRegister,reqUpdateUserInfo,reqGetUserInfo} from '../api';
-import {ERR_MSG,AUTH_SUCCESS,UPDATE_USER,RESET_USER} from './action-types';
+import {reqLogin,reqRegister,reqUpdateUserInfo,reqGetUserInfo ,reqGetUserList} from '../api';
+import {ERR_MSG,AUTH_SUCCESS,UPDATE_USER,RESET_USER, UPDATE_USER_LIST, RESET_USER_LIST} from './action-types';
 //同步action   注册成功   action-types有几个值，actions中就有几个同步action
 export const authSuccess = user => ({type: AUTH_SUCCESS, data: user});
 
@@ -21,6 +21,10 @@ export const updateUser = user => ({type: UPDATE_USER, data: user});
 //同步action  更新数据失败
 export const resetUser = msg => ({type: RESET_USER, data: msg});
 
+//同步action  更新用户列表成功
+export const updateUserList = userlist => ({type: UPDATE_USER_LIST, data: userlist});
+//同步action  更新用户列表失败
+export const resetUserList = msg => ({type: RESET_USER_LIST, data: msg});
 //注册的异步的action
 export const register = data => {
   //data 用户提交的请求参数
@@ -150,7 +154,23 @@ export const getUserInfo=()=>{
   }
 }
 
-
+//获取用户列表
+export const getUserList=type=>{
+  return dispatch=>{
+    reqGetUserList(type)
+      .then(res=>{
+      const result=res.data;
+      if(result.code===0){
+        dispatch(updateUserList(result.data))
+      }else {
+        dispatch(resetUserList({msg:result.msg}))
+      }
+      })
+      .catch(err=>{
+        dispatch(resetUserList({msg:'网络不稳定，请重新试试~'}))
+      })
+  }
+}
 /*
  修改步骤：
  1. actions / action-types
