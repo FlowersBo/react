@@ -6,9 +6,10 @@
 同步返回action对象
  异步返回一个函数
 */
-
-import {reqLogin,reqRegister,reqUpdateUserInfo,reqGetUserInfo ,reqGetUserList} from '../api';
-import {ERR_MSG,AUTH_SUCCESS,UPDATE_USER,RESET_USER, UPDATE_USER_LIST, RESET_USER_LIST} from './action-types';
+// 引入客户端io
+import io from 'socket.io-client';
+import {reqLogin,reqRegister,reqUpdateUserInfo,reqGetUserInfo ,reqGetUserList,reqGetChatMsgs} from '../api';
+import {ERR_MSG,AUTH_SUCCESS,UPDATE_USER,RESET_USER, UPDATE_USER_LIST, RESET_USER_LIST, UPDATE_CHAT_MSGS, RESET_CHAT_MSGS} from './action-types';
 //同步action   注册成功   action-types有几个值，actions中就有几个同步action
 export const authSuccess = user => ({type: AUTH_SUCCESS, data: user});
 
@@ -25,6 +26,10 @@ export const resetUser = msg => ({type: RESET_USER, data: msg});
 export const updateUserList = userlist => ({type: UPDATE_USER_LIST, data: userlist});
 //同步action  更新用户列表失败
 export const resetUserList = msg => ({type: RESET_USER_LIST, data: msg});
+//同步action  获取用户消息列表成功
+export const updateChatMsgs = chatMsgs => ({type: UPDATE_CHAT_MSGS, data: chatMsgs});
+//同步action  获取用户消息列表失败
+export const resetChatMsgs = msg => ({type: RESET_CHAT_MSGS, data: msg});
 //注册的异步的action
 export const register = data => {
   //data 用户提交的请求参数
@@ -168,6 +173,45 @@ export const getUserList=type=>{
       })
       .catch(err=>{
         dispatch(resetUserList({msg:'网络不稳定，请重新试试~'}))
+      })
+  }
+}
+
+//发送消息的异步action
+// 连接服务器, 得到代表连接的socket对象
+const socket = io('ws://localhost:5000');
+// 绑定'receiveMessage'的监听, 来接收服务器发送的消息
+socket.on('receiveMsg', function (data) {
+  console.log('浏览器端接收服务器发送的消息:', data)
+})
+
+//发送聊天消息数据的异步action
+export const sendMessage = ({content, from, to}) => {
+  return dispatch => {
+    //发送聊天消息
+    // 客户端向服务器发送消息
+    socket.emit('sendMsg', {content, from, to});
+    console.log('浏览器端向服务器发送消息');
+  }
+}
+
+
+//获取当前用户聊天信息列表
+export const getChatMsgs = () => {
+  return dispatch => {
+    //发送请求
+    reqGetChatMsgs()
+      .then(res => {
+        const result = res.data;
+        if (result.code === 0) {
+          //请求成功
+          dispatch(updateChatMsgs(result.data));
+        } else {
+          dispatch(resetChatMsgs({msg: result.msg}));
+        }
+      })
+      .catch(err => {
+        dispatch(resetChatMsgs({msg: '网络不稳定，请重新试试~'}));
       })
   }
 }

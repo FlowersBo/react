@@ -6,7 +6,8 @@ const Item = List.Item
 const Brief = Item.Brief
 export default class Personal extends React.Component {
   static propTypes={
-    user:PropTypes.object.isRequired
+    user:PropTypes.object.isRequired,
+    resetUser:PropTypes.func.isRequired
   }
   logout=()=>{
     Modal.alert('退出登录', '你确定退出登录吗?', [
@@ -14,7 +15,9 @@ export default class Personal extends React.Component {
       { text: '确认', onPress: () => {
         //清除Cookie
         Cookie.remove('userid');
-        //路由跳转到登录页面  推出页面出现了bug
+        //清空用户数据，redux上的数据
+        this.props.resetUser({});
+        //路由跳转到登录页面  退出页面出现了bug
         this.props.history.replace('/login');
       } },
     ])

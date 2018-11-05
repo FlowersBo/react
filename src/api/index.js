@@ -12,3 +12,4 @@ export const reqUpdateUserInfo=data=>ajax('/update',data,'POST');
 export const reqGetUserInfo=()=>ajax('/user');
 //请求获取用户列表的数据
 export const reqGetUserList=type=>ajax('/userlist',{type});
+export const reqGetChatMsgs=()=>ajax('/msglist');

@@ -12,6 +12,7 @@ import Dashen from '../../containers/dashen';
 import Message from '../../containers/message';
 import Personal from '../../containers/personal';
 import NavFooter from  '../nav-footer';
+import Chat from  '../../containers/chat';
 class Main extends Component {
   static propTypes={
     user:PropTypes.object.isRequired,
@@ -88,6 +89,7 @@ class Main extends Component {
           <Route path='/dashen' component={Dashen}/>
           <Route path='/message' component={Message}/>
           <Route path='/personal' component={Personal}/>
+          <Route path='/chat/:userid' component={Chat}/>
         </Switch>
         {currentNav?<NavFooter navList={navList}/>:''}
       </div>

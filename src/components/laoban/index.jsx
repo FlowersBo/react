@@ -11,7 +11,6 @@ class Laoaban extends Component {
   }
   render () {
     const {userList}=this.props;
-    console.log(userList);
     return (
       <div>
         {

@@ -3,7 +3,8 @@
  */
 import {connect} from 'react-redux';
 import Message from '../components/message';
+import {getChatMsgs} from '../redux/action';
 export default connect(
-  state=>({state}),
-  {}
+  state=>({chatList:state.chatList}),
+  {getChatMsgs}
 )(Message)
