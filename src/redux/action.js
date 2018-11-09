@@ -8,8 +8,8 @@
 */
 // 引入客户端io
 import io from 'socket.io-client';
-import {reqLogin,reqRegister,reqUpdateUserInfo,reqGetUserInfo ,reqGetUserList,reqGetChatMsgs} from '../api';
-import {ERR_MSG,AUTH_SUCCESS,UPDATE_USER,RESET_USER, UPDATE_USER_LIST, RESET_USER_LIST, UPDATE_CHAT_MSGS, RESET_CHAT_MSGS} from './action-types';
+import {reqLogin,reqRegister,reqUpdateUserInfo,reqGetUserInfo ,reqGetUserList,reqGetChatMsgs,reqUpdateUnReadCount} from '../api';
+import {ERR_MSG,AUTH_SUCCESS,UPDATE_USER,RESET_USER, UPDATE_USER_LIST, RESET_USER_LIST, UPDATE_CHAT_MSGS, RESET_CHAT_MSGS, UPDATE_CHAT_LIST, UPDATE_UNREADCOUNT, RESET_CUNREADCOUNT} from './action-types';
 //同步action   注册成功   action-types有几个值，actions中就有几个同步action
 export const authSuccess = user => ({type: AUTH_SUCCESS, data: user});
 
@@ -30,6 +30,14 @@ export const resetUserList = msg => ({type: RESET_USER_LIST, data: msg});
 export const updateChatMsgs = chatMsgs => ({type: UPDATE_CHAT_MSGS, data: chatMsgs});
 //同步action  获取用户消息列表失败
 export const resetChatMsgs = msg => ({type: RESET_CHAT_MSGS, data: msg});
+
+//同步的跟新消息列表
+export const updateChatList=chatMsgs=>({type: UPDATE_CHAT_LIST, data: chatMsgs})
+
+//同步action  获取用户未读消息成功
+export const updateCount = from => ({type: UPDATE_UNREADCOUNT, data: from});
+//同步action  获取用户未读消息失败
+export const resetCount = msg => ({type: RESET_CUNREADCOUNT, data: msg});
 //注册的异步的action
 export const register = data => {
   //data 用户提交的请求参数
@@ -85,6 +93,8 @@ export const login = data => {
         //请求成功
         const result = res.data;
         if (result.code === 0) {
+          //获取用户信息列表
+          getMsgs(dispatch);
           //登录成功
           dispatch(authSuccess(result.data));
         } else {
@@ -199,20 +209,51 @@ export const sendMessage = ({content, from, to}) => {
 //获取当前用户聊天信息列表
 export const getChatMsgs = () => {
   return dispatch => {
-    //发送请求
-    reqGetChatMsgs()
-      .then(res => {
-        const result = res.data;
-        if (result.code === 0) {
-          //请求成功
-          dispatch(updateChatMsgs(result.data));
-        } else {
-          dispatch(resetChatMsgs({msg: result.msg}));
-        }
-      })
-      .catch(err => {
-        dispatch(resetChatMsgs({msg: '网络不稳定，请重新试试~'}));
-      })
+    getMsgs(dispatch)
+  }
+}
+
+function getMsgs(dispatch) {
+  // 客户端向服务器发送消息
+  if(!socket.isFirst){
+    socket.isFirst=true;
+    socket.on('receiveMsg', function (data) {
+      console.log('浏览器端接收服务器发送的消息:', data)
+      dispatch(updateChatList(data))
+    })
+  }
+  
+  //发送请求
+  reqGetChatMsgs()
+    .then(res => {
+      const result = res.data;
+      if (result.code === 0) {
+        //请求成功
+        dispatch(updateChatMsgs(result.data));
+      } else {
+        dispatch(resetChatMsgs({msg: result.msg}));
+      }
+    })
+    .catch(err => {
+      dispatch(resetChatMsgs({msg: '网络不稳定，请重新试试~'}));
+    })
+}
+
+//更新未读消息
+export const updateUnReadCount=from=>{
+  return dispatch=>{
+   reqUpdateUnReadCount(from)
+     .then(res=>{
+       const result=res.data;
+       if(result.code===0){
+         dispatch(updateCount({from,count:result.count}))
+       }else{
+         dispatch(resetCount({msg:result.msg}))
+       }
+     })
+     .catch(err=>{
+       dispatch(resetCount({msg:'网络不稳定，请刷新重试'}))
+     })
   }
 }
 /*

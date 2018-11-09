@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import UserList from '../user-list';
+import UserList from '../../containers/user-list';
 import PropTypes from 'prop-types';
 class Laoaban extends Component {
   static propTypes={

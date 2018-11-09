@@ -4,8 +4,9 @@
 /*
  reducers函数： 根据之前的状态和action来产生新的状态
  */
+import Cookise from 'js-cookie';
 import {combineReducers} from 'redux';
-import {AUTH_SUCCESS,ERR_MSG,UPDATE_USER,RESET_USER, UPDATE_USER_LIST, RESET_USER_LIST, UPDATE_CHAT_MSGS, RESET_CHAT_MSGS} from './action-types';
+import {AUTH_SUCCESS,ERR_MSG,UPDATE_USER,RESET_USER, UPDATE_USER_LIST, RESET_USER_LIST, UPDATE_CHAT_MSGS, RESET_CHAT_MSGS, UPDATE_CHAT_LIST,UPDATE_UNREADCOUNT, RESET_CUNREADCOUNT} from './action-types';
 import {getRedirectPath} from '../utils';
 const initUserState={
   username:'',
@@ -42,14 +43,40 @@ function userList(preState=initUserList,action) {
 
 const initChatListState = {
   chatMsgs: [],
-  users: {}
+  users: {},
+  unReadCount:0
 };
 function chatList(preState = initChatListState, action) {
   switch (action.type) {
     case UPDATE_CHAT_MSGS :
-      return action.data;
+      const userid=Cookise.get('userid');
+      return {
+        ...action.data,
+        unReadCount:action.data.chatMsgs.reduce((prev,curr)=>{
+          return prev+(!curr.read&&curr.to===userid?1:0);
+        },0)
+      };
+      
     case RESET_CHAT_MSGS :
       return action.data;
+    case UPDATE_CHAT_LIST :
+      return {
+        chatMsgs:[...preState.chatMsgs,action.data],
+        users:preState.users
+      }
+    case UPDATE_UNREADCOUNT :
+      var userid = Cookise.get('userid');
+      return {
+        chatMsgs: preState.chatMsgs.map(chatMsg => {
+          if (chatMsg.from === action.data.from && chatMsg.to === userid && !chatMsg.read) {
+            return {...chatMsg, read: true}
+          } else {
+            return chatMsg;
+          }
+        }),
+        users: preState.users,
+        unReadCount: preState.unReadCount - action.data.count
+      }
     default :
       return preState;
   }

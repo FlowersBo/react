@@ -10,7 +10,11 @@ const Body = Card.Body
 
 class UserList extends React.Component {
   static propTypes={
-    item:PropTypes.object.isRequired
+    item:PropTypes.object.isRequired,
+    getChatMsgs:PropTypes.func.isRequired
+  }
+  componentDidMount(){
+  this.props.getChatMsgs()
   }
   render() {
     const {username,header,post,info,salary,company, _id}=this.props.item;

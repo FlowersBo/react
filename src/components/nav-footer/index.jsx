@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import  {TabBar} from 'antd-mobile';
 import PropTypes from 'prop-types';
-import {withRouter} from 'react-router-dom';
 const Item=TabBar.Item;
 class NavFooter extends Component {
  static propTypes={
-   navList: PropTypes.array.isRequired
+   navList: PropTypes.array.isRequired,
+   unReadCount:PropTypes.number.isRequired
  }
   render () {
     const {pathname}=this.props.location;
@@ -20,6 +20,7 @@ class NavFooter extends Component {
             selectedIcon={{ uri:require(`./images/${item.icon}-selected.png`)}}
             selected={pathname===item.path}
             onPress={()=>this.props.history.replace(item.path)}
+            badge={item.path==='/message'?this.props.unReadCount:0}
           />)
         }
       </TabBar>
@@ -27,4 +28,4 @@ class NavFooter extends Component {
   }
 }
 
-export default withRouter(NavFooter);
+export default NavFooter;

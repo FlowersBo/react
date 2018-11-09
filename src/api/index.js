@@ -12,4 +12,7 @@ export const reqUpdateUserInfo=data=>ajax('/update',data,'POST');
 export const reqGetUserInfo=()=>ajax('/user');
 //请求获取用户列表的数据
 export const reqGetUserList=type=>ajax('/userlist',{type});
+//请求获取当前聊天数据列表
 export const reqGetChatMsgs=()=>ajax('/msglist');
+//请求更新未读数据
+export const reqUpdateUnReadCount=from=>ajax('/readmsg',{from},'POST');

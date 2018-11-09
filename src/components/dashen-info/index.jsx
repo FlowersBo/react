@@ -34,7 +34,7 @@ class DashenInfo extends Component {
       return <Redirect to="/dashen"/>
     }
     return (
-     <div>
+     <div style={{marginTop:'-50px', marginBootom:'-60px'}}>
        <NavBar>大神信息完善界面</NavBar>
        <HeaderSelector setHeader={this.setHeader}/>
        {msg?<p className="err-msg">{msg}</p>:''};

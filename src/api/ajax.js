@@ -14,7 +14,6 @@ export default function ajax(url,data,type= 'GET'){
     })
     //去掉最后一个&
     querystring=querystring.substring(0,querystring.length-1);
-    console.log(querystring);
   }
   if(type.toUpperCase()==='GET'){//发送的GET请求
     url+='?'+querystring;
